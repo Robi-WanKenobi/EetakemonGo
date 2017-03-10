@@ -2,51 +2,50 @@ package EetakemonGo;
 
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import static org.junit.Assert.*;
 
 public class AppTest {
-    Controller testControlador = new Controller();
+    Controller testControlador = Controller.getController();
 
     @Test
     public void addEetakemon(){
         testControlador.add(new Eetakemon("Tonix", 2, "Avalancha programada"));
+        testControlador.add(new Eetakemon("Alakasals", 0, "Psicocarga"));
+        testControlador.add(new Eetakemon("Robopass", 1, "Aguante"));
+        testControlador.add(new Eetakemon("Livanny", 0, "Hoja afilada"));
         assertTrue(testControlador.getListEetakemon().hasMoreElements());
     }
 
     @Test
     public void delEetakemon(){
-        testControlador.add(new Eetakemon("Tonix", 2, "Avalancha programada"));
-        testControlador.delEetakemon(0);
-        assertTrue(!testControlador.getListEetakemon().hasMoreElements());
+        assertTrue(testControlador.delEetakemon(1));
     }
 
     @Test
     public void searchEetakemonByName(){
-        testControlador.add(new Eetakemon("Tonix", 2, "Avalancha programada"));
-        assertEquals(Eetakemon.class, testControlador.searchEetakemonByName("Tonix").getClass());
+        testControlador.add(new Eetakemon("Nachop", 1, "Fortaleza"));
+        assertEquals(Eetakemon.class, testControlador.searchEetakemonByName("Nachop").getClass());
     }
 
     @Test
     public void searchEetakemonByAprox(){
-        testControlador.add(new Eetakemon("Tonix", 2, "Avalancha programada"));
-        testControlador.add(new Eetakemon("Brunown", 1, "Repetición"));
-        testControlador.add(new Eetakemon("Juaunter", 0, "Fantasmada"));
-        assertTrue(testControlador.searchEetakemonAprox("un").size() == 2);
+        testControlador.add(new Eetakemon("Decerior", 2, "Examen final"));
+        assertTrue(testControlador.searchEetakemonAprox("ecer").size() == 1);
     }
 
     @org.junit.Test
     public void addUser() {
-        //Introducimos un usuario y miramos que en la lista haya algo
-        testControlador.add(new User("Roberto", "DomingueroRob", "robrobrob", "rob@gmail.com"));
+        testControlador.add(new User("Ivan", "Ivanivienen", "vanivan", "munozlois@gmail.com"));
+        testControlador.add(new User("Daniel", "SheldorSob", "danidanidani", "danieh@gmail.com"));
         assertTrue(testControlador.getListUsuarios().hasMoreElements());
     }
 
     @org.junit.Test
     public void delUser() {
-        testControlador.add(new User("Roberto", "DomingueroRob", "robrobrob", "rob@gmail.com"));
-        //Borramos y miramos que la lsita este vacía
-        testControlador.delUsuario(0);
-        assertTrue(!testControlador.getListUsuarios().hasMoreElements());
+        assertTrue(testControlador.delUsuario(100));
     }
 
     @org.junit.Test
@@ -57,21 +56,18 @@ public class AppTest {
 
     @org.junit.Test
     public void searchUserByAprox() {
-        testControlador.add(new User("Roberto", "DomingueroRob", "robrobrob", "roberto@gmail.com"));
-        testControlador.add(new User("Norberto", "EntrenaNor", "nornornor", "bert@gmail.com"));
-        testControlador.add(new User("Bertin", "Tumama", "osborne", "bosborne@gmail.com"));
-        assertTrue(testControlador.searchUsuarioAprox("er").size() == 3);
+        testControlador.add(new User("Victor", "Vissssa", "visasasa", "vgporcell@gmail.com"));
+        assertTrue(testControlador.searchUsuarioAprox("ict").size() == 1);
     }
 
     @Test
-    public void validLogin(){
-        testControlador.add(new User("Roberto", "DomingueroRob", "robrobrob", "roberto@gmail.com"));
-        assertTrue(testControlador.validateLogin("roberto@gmail.com","robrobrob"));
+    public void invalidRegister(){
+        testControlador.add(new User("Bruno", "Nodet", "peruano","love4matel@gmail.com"));
+        assertFalse(testControlador.add(new User("Bruno", "Nodet", "peruano","LovE4matel@gmail.com")));
     }
 
     @Test
     public void invalidLogin(){
-        testControlador.add(new User("Roberto", "DomingueroRob", "robrobrob", "roberto@gmail.com"));
         assertTrue(!testControlador.validateLogin("roberto@gmail.com","rob14"));
     }
 }

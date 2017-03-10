@@ -15,7 +15,8 @@ public class User {
     private String email;
     List<Capture> captures;
     private int level;
-    private double experience;
+    private int experience;
+    private int experienceNextLevel;
     private boolean modified;
     private boolean admin;
 
@@ -71,19 +72,17 @@ public class User {
         this.email = email;
     }
 
-    public int getLevel() {
-        return level;
-    }
+    public int getLevel() {return level;}
 
     public void setLevel(int level) {
         this.level = level;
     }
 
-    public double getExperience() {
+    public int getExperience() {
         return experience;
     }
 
-    public void setExperience(double experience) {
+    public void setExperience(int experience) {
         this.experience = experience;
     }
 
@@ -101,6 +100,14 @@ public class User {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public int getExperienceNextLevel() {
+        return experienceNextLevel;
+    }
+
+    public void setExperienceNextLevel(int experienceNextLevel) {
+        this.experienceNextLevel = experienceNextLevel;
     }
 }
 

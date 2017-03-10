@@ -4,17 +4,25 @@ import java.util.*;
 
 public class Controller {
 
-       public Hashtable<Integer, Eetakemon> hashtableEetakemon;
-    public Hashtable<Integer, User> hashtableUsuarios;
-    public Hashtable<Integer, Capture> hashtableCaptures;
-    public Hashtable<Integer, Location> hashtableLocations;
+    private static Controller controllerSingleton;
+    private Hashtable<Integer, Eetakemon> hashtableEetakemon;
+    private Hashtable<Integer, User> hashtableUsuarios;
+    private Hashtable<Integer, Capture> hashtableCaptures;
+    private Hashtable<Integer, Location> hashtableLocations;
     private int generatedIdEetakemon = 0;
     private int generatedIdUsuario = 100;
     private int generatedIdCapture = 0;
     private int generatedIdLocation = 0;
     private int userLoged;
 
-    public Controller() {
+    public static Controller getController(){
+        if (controllerSingleton == null){
+            controllerSingleton = new Controller();
+        }
+        return controllerSingleton;
+    }
+
+    private Controller() {
         hashtableEetakemon = new Hashtable<Integer, Eetakemon>();
         hashtableUsuarios = new Hashtable<Integer, User>();
         hashtableCaptures = new Hashtable<Integer, Capture>();
@@ -22,7 +30,7 @@ public class Controller {
     }
 
     //Añadir
-    public void add(Object o) {
+    public boolean add(Object o) {
 
         //Si es un Eetakemon
         if (o.getClass().equals(Eetakemon.class)) {
@@ -30,22 +38,45 @@ public class Controller {
             add.setId(generatedIdEetakemon);
             hashtableEetakemon.put(this.generatedIdEetakemon, add);
             this.generatedIdEetakemon++;
+            return true;
         }
         //Si es un Usuario
         else if (o.getClass().equals(User.class)) {
+
             User add = (User) o;
-            add.setId(generatedIdUsuario);
-            hashtableUsuarios.put(this.generatedIdUsuario, add);
-            this.generatedIdUsuario++;
+
+            if (validateRegister(add.getEmail())) {
+                add.setId(generatedIdUsuario);
+                add.setLevel(1);
+                add.setExperience(0);
+                add.setExperienceNextLevel(250);
+                hashtableUsuarios.put(this.generatedIdUsuario, add);
+                this.generatedIdUsuario++;
+                return true;
+            }
+            return false;
         }
 
         //Si es una captura
         else if (o.getClass().equals(Capture.class)){
             Capture add = (Capture) o;
             add.setIdUser(this.userLoged);
+            //Añadir la experiencia al usuario
+            hashtableUsuarios.get(this.userLoged).setExperience(hashtableUsuarios.get(this.userLoged).getExperience()+100);
+            if (hashtableUsuarios.get(this.userLoged).getExperience()>=hashtableUsuarios.get(this.userLoged).getExperienceNextLevel()){
+                levelUp(); //función abajo
+                //experiencia restante
+                hashtableUsuarios.get(this.userLoged).setExperience(hashtableUsuarios.get(this.userLoged).getExperience()-
+                hashtableUsuarios.get(this.userLoged).getExperienceNextLevel());
+                //nuevo objetivo de experiencia
+                int expNextLvl = (int) (250*Math.pow(1.5,hashtableUsuarios.get(this.userLoged).getLevel()-1));
+                hashtableUsuarios.get(this.userLoged).setExperienceNextLevel(expNextLvl);
+            }
+
             add.setId(this.generatedIdCapture);
             hashtableCaptures.put(add.getId(), add);
             this.generatedIdCapture++;
+            return true;
         }
 
         //Si es una localización
@@ -54,7 +85,9 @@ public class Controller {
             add.setId(generatedIdLocation);
             hashtableLocations.put(add.getId(), add);
             this.generatedIdLocation++;
+            return true;
         }
+        return false;
     }
 
     //Borrar Eetakemon por identificador
@@ -159,6 +192,19 @@ public class Controller {
         return false;
     }
 
+    public boolean validateRegister(String email){
+        List<User> validate = Collections.list(hashtableUsuarios.elements());
+
+        for (int i = 0; i<validate.size(); i++)
+        {
+            if (validate.get(i).getEmail().equalsIgnoreCase(email))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     //Generar un evento de captura
     public Capture spawnCapture(){
         Capture spawn = new Capture();
@@ -176,5 +222,9 @@ public class Controller {
             spawn.setHp(spawn.getHp()+200);
         }
         return spawn;
+    }
+
+    public void levelUp(){
+        hashtableUsuarios.get(this.userLoged).setLevel(hashtableUsuarios.get(this.userLoged).getLevel()+1);
     }
 }
